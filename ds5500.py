@@ -43,6 +43,10 @@ class DS5500(object):
         """
         self.inst.write("TDIV {0}".format(value))
         print("Time/Div is set to {0}".format( self.inst.query("TDIV?")))
+
+    def GetTimeDiv(self):
+        tdiv = self.inst.query_ascii_values("TDIV?")
+        return tdiv[0]
         
     def SetVerticalDiv(self, trace, v_gain):
         """ 
@@ -52,6 +56,17 @@ class DS5500(object):
         v_gain : (vertical division) +5.0E-3 (5mV)
         """
         self.inst.write("{0}:VDIV {1}".format(trace, v_gain))
+        
+    def GetVerticalDiv(self, trace):
+        """
+        Get value of vertical division
+        GetVerticalDiv("C1")
+        """
+        # self.inst.write("{0}:VDIV?".format(trace))
+        # vdiv = self.inst.read_raw()
+        vdiv = self.inst.query_ascii_values("{0}:VDIV?".format(trace))
+        print("Current Vertical Division for {0} : {1}".format(trace, vdiv))
+        return vdiv[0]
         
     ### Display setting ###
     def SetDisplay(self, state):
@@ -169,6 +184,13 @@ class DS5500(object):
         channel : CH1, CH2, CH3, CH4, MATH
         """
         self.inst.write('WAVESEC {0}'.format(channel))
+
+    def SetStartPoint(self, offset):
+        """
+        Set start points
+        SetStartPoints(offset)
+        """
+        self.inst.write('DTSTART {0}'.format(offset))
         
     def SetNumberOfPoints(self, points):
         """
@@ -184,7 +206,9 @@ class DS5500(object):
         self.SetDataType('ASCII')
         data = self.inst.query_ascii_values('DTWAVE?', container=numpy.array )
         return data
-    
+    # def GetWaveInfo(self):
+    #     info = self.inst.query_ascii_values('DTINF?')
+        
     ### For quick check, plot a wave form ###
     
 
