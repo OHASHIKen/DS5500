@@ -34,9 +34,9 @@ ds.SetStartPoint(TimeOffset)
 ### read wave
 ds.SetWaveFormSource("CH1")
 data = ds.GetWaveForm() ## data points 
-conversion = vdiv/256/32 + voffset
+conversion = vdiv/256/32
 ## ASCII 数値÷256÷32×電圧レンジ＋オフセット値
-yaxis = conversion*data
+yaxis = conversion*data  + voffset
 print(data)
 print(conversion)
 print(yaxis)
