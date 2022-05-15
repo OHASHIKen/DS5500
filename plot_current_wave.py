@@ -12,6 +12,8 @@ voffset = 0
 tdiv = 5E-8
 trigger = 4E-2
 samplingrate = 2E+9 ## number of samples in one second
+HoldAndRun = False
+holdtime = 10
 
 ### connect to oscilloscope 
 ds = ds5500.DS5500("192.168.8.11", "5198", 3000)
@@ -26,6 +28,8 @@ ds.GetTriggerMode()
 ds.SetTriggerSource("CH1")
 ds.SetTriggerSlope("POS")
 ds.SetTriggerLevel(trigger) ## 40 mV threshold
+if HoldAndRun:
+    ds.SetTriggerHoldTime(holdtime)
 
 ### to read wave format 
 ds.SetNumberOfPoints(NumberOfPointsToRead)
@@ -49,3 +53,7 @@ xaxis = np.linspace( timeInit, timeEnd, NumberOfPointsToRead) ## xaix
 ### plot 
 pyplot.plot(xaxis, yaxis)
 pyplot.show()
+
+### For next triggered event... 
+if HoldAndRun:
+    ds.RunTrigger()

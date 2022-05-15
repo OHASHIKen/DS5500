@@ -108,7 +108,21 @@ class DS5500(object):
         self.inst.write("TLVL {0}".format(level))
         print("Trigger level is set to {0}".format( self.inst.query('TLVL?')))
 
-
+    def SetTriggerHoldTime(self, time):
+        """ 
+        Set Trigger hold time
+        SetTriggerHoldTime(time)
+        time : time in second
+        """
+        self.inst.write("THTM {0}".format(time))
+        print("Set Trigger hold time to {0}".format( self.inst.query('THTM?')))
+        
+    def RunTrigger(self):
+        """ 
+        Change trigger mode to run 
+        """
+        self.inst.write('*TRG')
+        
     def SetPeriodicTrigger(self, when, m):
         """ 
         Set periodic trigger
