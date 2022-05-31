@@ -11,8 +11,15 @@ class DS5500(object):
         rm = visa.ResourceManager()
         self.inst = rm.open_resource("TCPIP::{0}::{1}::SOCKET".format(ip, port))
         self.inst.read_termination = '\n'
-        self.write_termination = '\n'
+        self.inst.write_termination = '\n'
         self.timeout = timeout
+        self.numberOfPointsToRead = 1000
+        self.timeOffset = 0
+        self.vDiv = 1E-2
+        self.vOffset = 0
+        self.tDiv = 1E-7
+        self.Trigger = 6E-3
+        self.samplingRate = 1E+9
         print(self.inst.query('*IDN?')) ## print oscilloscope name
 
     ### Basic setting ###
@@ -42,6 +49,7 @@ class DS5500(object):
         example of value : +20.000000E-03 (20ms/div), 20US (20 micro sec/div), 1E-9 (1ns/div)
         """
         self.inst.write("TDIV {0}".format(value))
+        self.tDiv = value
         print("Time/Div is set to {0}".format( self.inst.query("TDIV?")))
 
     def GetTimeDiv(self):
@@ -56,6 +64,7 @@ class DS5500(object):
         v_gain : (vertical division) +5.0E-3 (5mV)
         """
         self.inst.write("{0}:VDIV {1}".format(trace, v_gain))
+        self.vDiv = v_gain
         
     def GetVerticalDiv(self, trace):
         """
@@ -106,6 +115,7 @@ class DS5500(object):
         level : voltage in V
         """
         self.inst.write("TLVL {0}".format(level))
+        self.Trigger = level
         print("Trigger level is set to {0}".format( self.inst.query('TLVL?')))
 
 
@@ -191,6 +201,7 @@ class DS5500(object):
         SetStartPoints(offset)
         """
         self.inst.write('DTSTART {0}'.format(offset))
+        self.timeOffset = offset 
         
     def SetNumberOfPoints(self, points):
         """
@@ -198,6 +209,7 @@ class DS5500(object):
         SetNumberOfPoints(points)
         """
         self.inst.write('DTPOINTS {0}'.format(points))
+        self.numberOfPointsToRead = points
         
     def GetWaveForm(self):
         """
@@ -206,6 +218,50 @@ class DS5500(object):
         self.SetDataType('ASCII')
         data = self.inst.query_ascii_values('DTWAVE?', container=numpy.array )
         return data
+    def SetCurrentSamplingRate(self, samplingrate):
+        self.samplingRate = samplingrate
+        
+    def PrintValuesForWaveForm(self):
+        print("Please compare following values with Oscilloscope!!\n")
+        print("Time div : {}\n".format(self.tDiv))
+        print("Time offset : {}\n".format(self.timeOffset))
+        print("vertical div : {}\n".format(self.vDiv))
+        print("vertical offset : {}\n".format(self.vOffset))
+        print("Trigger level : {}\n".format(self.Trigger))
+        print("Sampling Rate : {}\n".format(self.samplingRate))
+        print("number of points for wave form : {}\n".format(self.numberOfPointsToRead))
+        
+        
+    def GetCurrentWaveForm(self):
+        """
+        Get current waveform. 
+        xaxis: time,
+        yaxis: voltage
+        """
+        data = self.GetWaveForm() ## data points 
+        conversion = self.vDiv/256/32
+        
+        ## ASCII 数値÷256÷32×電圧レンジ-オフセット値
+        yaxis = conversion*data - self.vOffset
+        #print(data)
+        #print(conversion)
+
+        ### xaxis 
+        timeInit = - self.tDiv * 5 + TimeOffset/self.samplingRate  ## -tdiv * 5
+        timeEnd = - self.tDiv * 5 + (self.numberOfPointsToRead - self.timeOffset)/self.samplingRate
+        xaxis = numpy.linspace( timeInit, timeEnd, self.numberOfPointsToRead) ## xaix 
+        
+        return xaxis, yaxis
+    
+    def GetIntegratedValue(self, limit_low, limit_high):
+        xaxis, yaxis = self.GetCurrentWaveForm()
+        integrated_value = 0
+        for i in range(NumberOfPointsToRead):
+            if xaxis[i] > limit_low and xaxis[i] < limit_high:
+                yvalue += yaxis[i]
+                
+        return integrated_value
+    
     # def GetWaveInfo(self):
     #     info = self.inst.query_ascii_values('DTINF?')
         
