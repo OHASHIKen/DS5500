@@ -1,10 +1,11 @@
 import ds5500
 import time
+from matplotlib import pyplot
 
 ## settings for integral
 i = 0
 y_pre = 0.
-attemps = 100
+attemps = 2 # 100
 integral_lower = 0
 integral_upper = 1E-7
 ### constant
@@ -36,7 +37,7 @@ ds.SetTriggerLevel(trigger) ## 40 mV threshold
 ### to read wave format 
 ds.SetNumberOfPoints(NumberOfPointsToRead)
 ds.SetStartPoint(TimeOffset)
-ds.SetCurrentSampingRate(samplingrate)
+ds.SetCurrentSamplingRate(samplingrate)
 
 ### read wave
 ds.SetWaveFormSource("CH1")
@@ -44,14 +45,21 @@ ds.PrintValuesForWaveForm()
 
 
 while i < attemps:
-    y = ds.GetIntegratedValue(limit_low = integral_lower, limit_high = integral_upper)
+    xaxis, yaxis = ds.GetCurrentWaveForm()
+    integrated_value = 0.
+    for i in range (ds.numberOfPointsToRead):
+        if (xaxis[i] > integral_lower) and (xaxis[i] < integral_upper):
+            integrated_value += yaxis[i]
+    y = integrated_value
+    print(y)
+    
     if y == y_pre:
         y_pre = y
     
     else:
-        print("Attempts {0} : integrated value {1}".format(i, y))
         y_pre = y
-        i += 1
+        # i += 1
+    i += 1
     
     time.sleep(4)
 

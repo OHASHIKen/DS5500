@@ -261,20 +261,23 @@ class DS5500(object):
         #print(conversion)
 
         ### xaxis 
-        timeInit = - self.tDiv * 5 + TimeOffset/self.samplingRate  ## -tdiv * 5
+        timeInit = - self.tDiv * 5 + self.timeOffset/self.samplingRate  ## -tdiv * 5
         timeEnd = - self.tDiv * 5 + (self.numberOfPointsToRead - self.timeOffset)/self.samplingRate
         xaxis = numpy.linspace( timeInit, timeEnd, self.numberOfPointsToRead) ## xaix 
         
         return xaxis, yaxis
     
-    def GetIntegratedValue(self, limit_low, limit_high):
-        xaxis, yaxis = self.GetCurrentWaveForm()
-        integrated_value = 0
-        for i in range(NumberOfPointsToRead):
-            if xaxis[i] > limit_low and xaxis[i] < limit_high:
-                yvalue += yaxis[i]
+    # def GetIntegratedValue(self, limit_low, limit_high):
+    #     x, y = self.GetCurrentWaveForm()
+    #     print("size of x and y axis : {0}, {1} ".format(x.size,y.size))
+        
+    #     integrated_value = 0
+    #     for i in range(self.numberOfPointsToRead):
+    #         if x[i] > limit_low and x[i] < limit_high:
+    #             print(i)
+    #             integrated_value += y[i]
                 
-        return integrated_value
+    #     return integrated_value
     
     # def GetWaveInfo(self):
     #     info = self.inst.query_ascii_values('DTINF?')
