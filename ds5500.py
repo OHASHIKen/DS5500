@@ -21,6 +21,7 @@ class DS5500(object):
         self.Trigger = 6E-3
         self.samplingRate = 1E+9
         print(self.inst.query('*IDN?')) ## print oscilloscope name
+        
 
     ### Basic setting ###
     def GetDate(self):
@@ -244,8 +245,8 @@ class DS5500(object):
         print("Trigger level : {}\n".format(self.Trigger))
         print("Sampling Rate : {}\n".format(self.samplingRate))
         print("number of points for wave form : {}\n".format(self.numberOfPointsToRead))
-        
-        
+        print(self.inst.query('DTINF?'))
+
     def GetCurrentWaveForm(self):
         """
         Get current waveform. 

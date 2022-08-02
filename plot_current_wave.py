@@ -57,3 +57,5 @@ pyplot.show()
 ### For next triggered event... 
 if HoldAndRun:
     ds.RunTrigger()
+
+del ds

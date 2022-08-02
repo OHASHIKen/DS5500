@@ -14,3 +14,4 @@ ds.SetTriggerLevel(0.1)
 
 ds.GetTriggerFrequency()
 
+del ds

@@ -5,12 +5,12 @@ from matplotlib import pyplot
 ## settings for integral
 i = 0
 y_pre = 0.
-attemps = 2 # 100
+attemps = 4 # 100
 integral_lower = 0
 integral_upper = 1E-7
 ### constant
 # PointsPerDiv = 5000
-NumberOfPointsToRead = 1000 # 1000
+NumberOfPointsToRead = 100 # 1000
 TimeOffset = 0 # -100
 # vdiv = 1E-1
 vdiv = 1E-2 ##縦軸１ブロックの大きさ
@@ -18,6 +18,8 @@ voffset = -0.03
 tdiv = 1E-7 ##横軸1ブロックの大きさ
 trigger = 6E-3
 samplingrate = 1E+9 ## number of samples in one second
+tsleep = 4 ## sleep する時間
+
 
 
 ### connect to oscilloscope 
@@ -46,10 +48,17 @@ ds.PrintValuesForWaveForm()
 
 while i < attemps:
     xaxis, yaxis = ds.GetCurrentWaveForm()
+    print(i)
+    print(xaxis)
+    print(yaxis)
+    if yaxis.size == 0:
+        time.sleep(tsleep)
+        xaxis, yaxis = ds.GetCurrentWaveForm()
+        print(yaxis)
     integrated_value = 0.
-    for i in range (ds.numberOfPointsToRead):
-        if (xaxis[i] > integral_lower) and (xaxis[i] < integral_upper):
-            integrated_value += yaxis[i]
+    for j in range (ds.numberOfPointsToRead):
+        if (xaxis[j] > integral_lower) and (xaxis[j] < integral_upper):
+            integrated_value += yaxis[j]
     y = integrated_value
     print(y)
     
@@ -61,6 +70,6 @@ while i < attemps:
         # i += 1
     i += 1
     
-    time.sleep(4)
+    time.sleep(tsleep)
 
-
+del ds
