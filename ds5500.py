@@ -43,7 +43,8 @@ class DS5500(object):
         """
         self.inst.write("{0}:OFST {1}".format(trace, offset))
         print("Offset changed. Current offset is {0}".format( self.inst.query("{0}:OFST?".format(trace)) ) )
-
+        self.vOffset = offset
+        
     def SetTimeDiv(self, value):
         """
         SetTimeDiv(value)
