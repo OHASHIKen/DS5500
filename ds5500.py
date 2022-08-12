@@ -209,7 +209,7 @@ class DS5500(object):
         SetWaveFormSource(channel)
         channel : CH1, CH2, CH3, CH4, MATH
         """
-        self.inst.write('WAVESEC {0}'.format(channel))
+        self.inst.write('WAVESRC {0}'.format(channel))
 
     def SetStartPoint(self, offset):
         """
@@ -233,7 +233,9 @@ class DS5500(object):
         """
         self.SetDataType('ASCII')
         data = self.inst.query_ascii_values('DTWAVE?', container=numpy.array )
+        a = self.inst.read() # Do not remove it. It is nessesary even I do not know why ...
         return data
+
     def SetCurrentSamplingRate(self, samplingrate):
         self.samplingRate = samplingrate
         
