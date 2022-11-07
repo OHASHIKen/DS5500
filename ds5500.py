@@ -233,7 +233,7 @@ class DS5500(object):
         """
         self.SetDataType('ASCII')
         data = self.inst.query_ascii_values('DTWAVE?', container=numpy.array )
-        a = self.inst.read() # Do not remove it. It is nessesary even I do not know why ...
+        # data = self.inst.read() 
         return data
 
     def SetCurrentSamplingRate(self, samplingrate):
